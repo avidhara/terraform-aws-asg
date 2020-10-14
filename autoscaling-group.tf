@@ -1,42 +1,48 @@
-resource "null_resource" "tags_as_list_of_maps" {
-  count = length(keys(var.additional_tags))
+resource "aws_autoscaling_group" "this" {
+  name = format("%s-asg", var.name)
 
-  triggers = {
-    "key"                 = keys(var.additional_tags)[count.index]
-    "value"               = values(var.additional_tags)[count.index]
-    "propagate_at_launch" = "true"
-  }
-}
-
-resource "aws_autoscaling_group" "asg" {
-  name                 = var.name
-  launch_configuration = aws_launch_configuration.instance.id
-
-  vpc_zone_identifier = var.vpc_zone_identifier
+  max_size             = var.max_size
+  min_size             = var.min_size
+  default_cooldown     = var.default_cooldown
+  launch_configuration = aws_launch_configuration.this.id
 
   health_check_grace_period = var.health_check_grace_period
   health_check_type         = var.health_check_type
-  default_cooldown          = var.default_cooldown
-  min_size                  = var.min_size
   desired_capacity          = var.desired_capacity
-  max_size                  = var.max_size
+  force_delete              = var.force_delete
 
-  suspended_processes       = var.suspended_processes
-  wait_for_capacity_timeout = var.wait_for_capacity_timeout
+  load_balancers      = var.load_balancers
+  vpc_zone_identifier = var.vpc_zone_identifier
 
+  target_group_arns    = var.target_group_arns
+  termination_policies = var.termination_policies
+  suspended_processes  = var.suspended_processes
+
+  placement_group     = var.placement_group
   metrics_granularity = var.metrics_granularity
   enabled_metrics     = var.enabled_metrics
-  placement_group     = var.placement_group
-  tags = concat(
-    [
-      {
-        key                 = "Name"
-        value               = var.name
-        propagate_at_launch = true
-      }
-    ],
-    null_resource.tags_as_list_of_maps.*.triggers,
-  )
+
+
+
+  wait_for_capacity_timeout = var.wait_for_capacity_timeout
+
+  min_elb_capacity        = var.min_elb_capacity
+  wait_for_elb_capacity   = var.wait_for_elb_capacity
+  protect_from_scale_in   = var.protect_from_scale_in
+  service_linked_role_arn = var.service_linked_role_arn
+  max_instance_lifetime   = var.max_instance_lifetime
+
+
+
+  dynamic "tag" {
+    for_each = local.tags
+    content {
+      key                 = tag.value["key"]
+      value               = tag.value["value"]
+      propagate_at_launch = tag.value["propagate_at_launch"]
+    }
+  }
+
   lifecycle {
     create_before_destroy = true
     ignore_changes = [
