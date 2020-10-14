@@ -4,7 +4,7 @@ resource "aws_launch_configuration" "this" {
   instance_type               = var.instance_type
   iam_instance_profile        = var.iam_instance_profile
   key_name                    = var.key_name
-  security_groups             = var.security_groups
+  security_groups             = length(var.security_groups) <= 0 && var.vpc_id != "" ? aws_security_group.this.*.id : var.security_groups
   associate_public_ip_address = var.associate_public_ip_address
   enable_monitoring           = var.enable_monitoring
   ebs_optimized               = var.ebs_optimized
