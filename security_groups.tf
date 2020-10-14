@@ -34,7 +34,11 @@ resource "aws_security_group" "this" {
     }
   }
 
-  tags = {
-    Name = format("%s-sg", var.name)
-  }
+  tags = merge(
+    {
+      Name = format("%s-sg", var.name)
+    },
+    var.tags
+  )
+
 }

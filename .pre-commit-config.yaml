@@ -5,5 +5,5 @@ repos:
     - id: terraform_fmt
     - id: terraform_docs
     - id: checkov
-    # - id: terraform_tfsec
+    - id: terraform_tfsec
     - id: terraform_tflint
