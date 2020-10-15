@@ -2,7 +2,7 @@
 # Terraform Module for AWS Auto Scaling Group
 
 ### Use as a Module
-
+Go tot `examples` dir for more examples
 ```terrraform
 module "asg_1" {
   source        = "../"
@@ -56,10 +56,17 @@ module "asg_1" {
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | associate\_public\_ip\_address | Associate a public ip address with an instance in a VPC. | `bool` | `false` | no |
+| block\_device\_mappings | Specify volumes to attach to the instance besides the volumes specified by the AMI | `any` | `[]` | no |
+| credit\_specification | Customize the credit specification of the instances | <pre>object({<br>    cpu_credits = string<br>  })</pre> | `null` | no |
 | default\_cooldown | The amount of time, in seconds, after a scaling activity completes before another scaling activity can start. | `number` | `30` | no |
+| default\_version | Default Version of the launch template. | `string` | `null` | no |
 | desired\_capacity | The number of Amazon EC2 instances that should be running in the group | `number` | `"1"` | no |
+| disable\_api\_termination | If `true`, enables EC2 Instance Termination Protection | `bool` | `false` | no |
 | ebs\_optimized | If true, the launched EC2 instance will be EBS-optimized | `bool` | `false` | no |
 | egress | (Optional, VPC only) Can be specified multiple times for each egress rule. | `any` | `[]` | no |
+| enable\_autoscaling\_group | Do you want to enable Auto scaling group | `bool` | `false` | no |
+| enable\_launch\_configuration | Do you want to enable launch\_configuration | `bool` | `true` | no |
+| enable\_launch\_template | Do you want to enable launch\_template | `bool` | `false` | no |
 | enable\_monitoring | Enables/disables detailed monitoring. This is enabled by default. | `bool` | `false` | no |
 | enabled\_metrics | A list of metrics to collect. The allowed values are GroupMinSize, GroupMaxSize, GroupDesiredCapacity, GroupInServiceInstances, GroupPendingInstances, GroupStandbyInstances, GroupTerminatingInstances, GroupTotalInstances | `list(string)` | <pre>[<br>  "GroupMinSize",<br>  "GroupMaxSize",<br>  "GroupDesiredCapacity",<br>  "GroupInServiceInstances",<br>  "GroupPendingInstances",<br>  "GroupStandbyInstances",<br>  "GroupTerminatingInstances",<br>  "GroupTotalInstances"<br>]</pre> | no |
 | force\_delete | Allows deleting the autoscaling group without waiting for all instances in the pool to terminate. You can force an autoscaling group to delete even if it's in the process of scaling a resource. Normally, Terraform drains all the instances before deleting the group. This bypasses that behavior and potentially leaves resources dangling | `bool` | `false` | no |
@@ -68,6 +75,7 @@ module "asg_1" {
 | iam\_instance\_profile | The name attribute of the IAM instance profile to associate with launched instances. | `string` | `null` | no |
 | image\_id | The EC2 image ID to launch | `string` | `null` | no |
 | ingress | (Optional) Can be specified multiple times for each ingress rule. | `any` | `[]` | no |
+| instance\_initiated\_shutdown\_behavior | Shutdown behavior for the instances. Can be `stop` or `terminate` | `string` | `"terminate"` | no |
 | instance\_type | The size of instance to launch | `string` | `null` | no |
 | key\_name | The key name that should be used for the instance | `string` | `null` | no |
 | load\_balancers | A list of elastic load balancer names to add to the autoscaling group names | `list(string)` | `[]` | no |

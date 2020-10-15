@@ -1,11 +1,20 @@
 resource "aws_autoscaling_group" "this" {
-  name = format("%s-asg", var.name)
+  count = var.enable_autoscaling_group ? 1 : 0
+  name  = format("%s-asg", var.name)
 
   max_size             = var.max_size
   min_size             = var.min_size
   default_cooldown     = var.default_cooldown
-  launch_configuration = aws_launch_configuration.this.id
+  launch_configuration = var.enable_launch_configuration ? aws_launch_configuration.this[0].id : null
 
+  dynamic "launch_template" {
+    for_each = var.enable_launch_template ? aws_launch_template.this.*.id : []
+    content {
+      id      = aws_launch_template.this[0].id
+      version = "$Latest"
+    }
+
+  }
   health_check_grace_period = var.health_check_grace_period
   health_check_type         = var.health_check_type
   desired_capacity          = var.desired_capacity

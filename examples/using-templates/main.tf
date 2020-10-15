@@ -10,22 +10,35 @@ resource "aws_iam_service_linked_role" "autoscaling" {
 }
 
 module "asg_1" {
-  source        = "../"
-  name          = "example"
+  source = "../"
+  name   = "example"
+
+  enable_launch_configuration = false
+  enable_launch_template      = true
+  block_device_mappings = [
+    {
+      device_name = "/dev/xvda"
+      ebs = {
+        volume_size = 20
+        volume_type = "gp2"
+      }
+    }
+  ]
   image_id      = "ami-01fee56b22f308154"
   instance_type = "t2.micro"
   key_name      = "test"
   user_data     = file("${path.module}/install.sh")
-  root_block_device = [
-    {
-      volume_size           = "25"
-      volume_type           = "gp2"
-      delete_on_termination = true
-      encrypted             = true
+  # root_block_device = [
+  #   {
+  #     volume_size           = "25"
+  #     volume_type           = "gp2"
+  #     delete_on_termination = true
+  #     encrypted             = true
 
-    },
-  ]
-
+  #   },
+  # ]
+  ### ASG
+  enable_autoscaling_group  = true
   vpc_id                    = var.vpc_id
   ingress                   = var.ingress
   egress                    = var.egress
@@ -36,7 +49,7 @@ module "asg_1" {
   wait_for_capacity_timeout = 0
   service_linked_role_arn   = aws_iam_service_linked_role.autoscaling.arn
   tags = {
-    extra_tag1 = "extra_value1"
-    extra_tag2 = "extra_value2"
+    Tier       = "Application"
+    Allocation = "1234"
   }
 }

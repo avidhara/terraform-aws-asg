@@ -1,4 +1,5 @@
 resource "aws_launch_configuration" "this" {
+  count                       = var.enable_launch_configuration ? 1 : 0
   name                        = var.name
   image_id                    = var.image_id
   instance_type               = var.instance_type

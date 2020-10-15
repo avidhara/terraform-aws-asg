@@ -1,4 +1,10 @@
 ######### For Launch Configuraions ##############
+variable "enable_launch_configuration" {
+  type        = bool
+  description = "Do you want to enable launch_configuration"
+  default     = true
+}
+
 variable "name" {
   type        = string
   description = "(Optional) The name of the launch configuration. If you leave this blank, Terraform will auto-generate a unique name."
@@ -108,6 +114,13 @@ variable "placement_tenancy" {
 }
 
 ########### For ASG ############
+
+variable "enable_autoscaling_group" {
+  type        = bool
+  description = "Do you want to enable Auto scaling group"
+  default     = false
+}
+
 
 variable "max_size" {
   type        = number
@@ -246,3 +259,45 @@ variable "egress" {
 
   ]
 }
+
+
+############ Launch Templates #########
+
+variable "enable_launch_template" {
+  type        = bool
+  description = "Do you want to enable launch_template"
+  default     = false
+}
+
+variable "default_version" {
+  type        = string
+  description = "Default Version of the launch template."
+  default     = null
+}
+
+variable "block_device_mappings" {
+  type        = any
+  description = "Specify volumes to attach to the instance besides the volumes specified by the AMI"
+  default     = []
+}
+
+variable "credit_specification" {
+  type = object({
+    cpu_credits = string
+  })
+  description = "Customize the credit specification of the instances"
+  default     = null
+}
+
+variable "disable_api_termination" {
+  type        = bool
+  description = "If `true`, enables EC2 Instance Termination Protection"
+  default     = false
+}
+
+variable "instance_initiated_shutdown_behavior" {
+  type        = string
+  description = "Shutdown behavior for the instances. Can be `stop` or `terminate`"
+  default     = "terminate"
+}
+
