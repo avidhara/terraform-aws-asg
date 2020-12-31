@@ -10,11 +10,9 @@ resource "aws_iam_service_linked_role" "autoscaling" {
 }
 
 module "asg_1" {
-  source = "../"
+  source = "../../"
   name   = "example"
 
-  enable_launch_configuration = false
-  enable_launch_template      = true
   block_device_mappings = [
     {
       device_name = "/dev/xvda"
@@ -24,32 +22,39 @@ module "asg_1" {
       }
     }
   ]
-  image_id      = "ami-01fee56b22f308154"
+  image_id      = "ami-0947d2ba12ee1ff75"
   instance_type = "t2.micro"
   key_name      = "test"
   user_data     = file("${path.module}/install.sh")
-  # root_block_device = [
-  #   {
-  #     volume_size           = "25"
-  #     volume_type           = "gp2"
-  #     delete_on_termination = true
-  #     encrypted             = true
 
-  #   },
-  # ]
   ### ASG
   enable_autoscaling_group  = true
-  vpc_id                    = var.vpc_id
-  ingress                   = var.ingress
-  egress                    = var.egress
   vpc_zone_identifier       = var.vpc_zone_identifier
+  security_groups           = var.security_groups
   min_size                  = 0
   max_size                  = 1
   desired_capacity          = 1
   wait_for_capacity_timeout = 0
   service_linked_role_arn   = aws_iam_service_linked_role.autoscaling.arn
+
+  initial_lifecycle_hook = [
+    {
+      name                 = "example-initial-lifecyclehook"
+      default_result       = "CONTINUE"
+      heartbeat_timeout    = "500"
+      lifecycle_transition = "autoscaling:EC2_INSTANCE_LAUNCHING"
+    }
+  ]
+  enable_autoscaling_policy = true
+  
   tags = {
-    Tier       = "Application"
-    Allocation = "1234"
+    Tier        = "Application"
+    Allocation  = "example"
+    Environment = "Exploratory"
+    owner       = "cpe"
+    project-id  = "0000"
+    cost-center = "00000"
+    app         = "testing"
+
   }
 }

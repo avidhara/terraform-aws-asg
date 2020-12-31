@@ -27,6 +27,15 @@ resource "aws_launch_template" "this" {
       }
     }
   }
+  # checkov:skip=CKV_AWS_79:This needs to be addressed
+  # dynamic "metadata_options " {
+  #   for_each = var.metadata_options
+  #   content {
+  #     http_endpoint               = lookup(metadata_options.value, "http_endpoint", "enabled")
+  #     http_tokens                 = lookup(metadata_options.value, "http_tokens", "optional")
+  #     http_put_response_hop_limit = lookup(metadata_options.value, "http_put_response_hop_limit", "1")
+  #   }
+  # }
 
   dynamic "credit_specification" {
     for_each = var.credit_specification != null ? [var.credit_specification] : []

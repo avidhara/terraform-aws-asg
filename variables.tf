@@ -2,7 +2,7 @@
 variable "enable_launch_configuration" {
   type        = bool
   description = "Do you want to enable launch_configuration"
-  default     = true
+  default     = false
 }
 
 variable "name" {
@@ -238,6 +238,13 @@ variable "max_instance_lifetime" {
   default     = 0
 }
 
+variable "initial_lifecycle_hook" {
+  type        = list(map(string))
+  description = "(Optional) One or more Lifecycle Hooks to attach to the autoscaling group before instances are launched. The syntax is exactly the same as the separate aws_autoscaling_lifecycle_hook resource, without the autoscaling_group_name attribute. Please note that this will only work when creating a new autoscaling group. For all other use-cases, please use aws_autoscaling_lifecycle_hook resource."
+  default = [
+  ]
+}
+
 variable "vpc_id" {
   type        = string
   description = "(Optional, Forces new resource) The VPC ID."
@@ -260,17 +267,16 @@ variable "egress" {
   ]
 }
 
-
 ############ Launch Templates #########
 
 variable "enable_launch_template" {
   type        = bool
   description = "Do you want to enable launch_template"
-  default     = false
+  default     = true
 }
 
 variable "default_version" {
-  type        = string
+  type        = number
   description = "Default Version of the launch template."
   default     = null
 }
@@ -301,3 +307,62 @@ variable "instance_initiated_shutdown_behavior" {
   default     = "terminate"
 }
 
+variable "metadata_options" {
+  type        = list(map(string))
+  description = "(Optional) Customize the metadata options for the instance."
+  default = [
+  ]
+}
+
+########### AutoScaling Scaling Policy resource ####
+
+variable "enable_autoscaling_policy" {
+  type        = bool
+  description = "Do you want to enable ASG Policy"
+  default     = false
+}
+
+variable "adjustment_type" {
+  type        = string
+  description = " (Optional) Specifies whether the adjustment is an absolute number or a percentage of the current capacity. Valid values are ChangeInCapacity, ExactCapacity, and PercentChangeInCapacity."
+  default     = "ExactCapacity"
+}
+
+variable "policy_type" {
+  type        = string
+  description = "(Optional) The policy type, either `SimpleScaling`, `StepScaling` or `TargetTrackingScaling`. If this value isn't provided, AWS will default to `SimpleScaling.`"
+  default     = "SimpleScaling"
+}
+
+variable "estimated_instance_warmup" {
+  type        = number
+  description = " (Optional) The estimated time, in seconds, until a newly launched instance will contribute CloudWatch metrics. Without a value, AWS will default to the group's specified cooldown period."
+  default     = 300
+}
+
+variable "cooldown" {
+  type        = number
+  description = " (Optional) The amount of time, in seconds, after a scaling activity completes and before the next scaling activity can start."
+  default     = 300
+}
+
+variable "scaling_adjustment" {
+  type        = number
+  description = "(Optional) The number of instances by which to scale. adjustment_type determines the interpretation of this number (e.g., as an absolute number or as a percentage of the existing Auto Scaling group size). A positive increment adds to the current capacity and a negative value removes from the current capacity."
+  default     = 4
+}
+
+
+variable "min_adjustment_magnitude" {
+  type        = string
+  description = "(Optional) Minimum value to scale by when adjustment_type is set to PercentChangeInCapacity"
+  default     = null
+}
+
+variable "target_tracking_configuration" {
+  type        = any
+  description = " (Optional) A target tracking policy."
+  default = [
+
+  ]
+}

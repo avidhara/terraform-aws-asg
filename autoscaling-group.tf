@@ -15,6 +15,20 @@ resource "aws_autoscaling_group" "this" {
     }
 
   }
+
+  dynamic "initial_lifecycle_hook" {
+    for_each = var.initial_lifecycle_hook
+    content {
+      name                    = lookup(initial_lifecycle_hook.value, "name")
+      default_result          = lookup(initial_lifecycle_hook.value, "default_result", null)
+      heartbeat_timeout       = lookup(initial_lifecycle_hook.value, "heartbeat_timeout", null)
+      lifecycle_transition    = lookup(initial_lifecycle_hook.value, "lifecycle_transition")
+      notification_metadata   = lookup(initial_lifecycle_hook.value, "notification_metadata", null)
+      notification_target_arn = lookup(initial_lifecycle_hook.value, "notification_target_arn", null)
+      role_arn                = lookup(initial_lifecycle_hook.value, "role_arn", null)
+    }
+  }
+
   health_check_grace_period = var.health_check_grace_period
   health_check_type         = var.health_check_type
   desired_capacity          = var.desired_capacity
@@ -59,3 +73,4 @@ resource "aws_autoscaling_group" "this" {
     ]
   }
 }
+
